@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+google-cloud-firestore
+ShopifyAPI==10.0.0
+python-dotenv
+pydantic
+pytest
+pytest-asyncio
+httpx
+
