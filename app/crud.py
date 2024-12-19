@@ -1,7 +1,7 @@
-from fastapi import FastAPI, HTTPException
-from app.models import Item, ItemCreate, Product, ShopifyCredentials
+from fastapi import FastAPI, HTTPException, Query
+from app.models import Item, ItemCreate, Product, ShopifyCredentials, Order, OrderStatus
 from app.database import get_firestore_client
-from typing import List
+from typing import List, Optional
 from datetime import datetime, timezone
 import json
 import logging
@@ -37,7 +37,7 @@ def create_app() -> FastAPI:
     @app.get("/items/{item_id}", response_model=Item)
     def get_item(item_id: str):
         try:
-            # Firestoreからデータを取得
+            # Firestoreからデー���を取得
             doc = db.collection(collection_name).document(item_id).get()
             if not doc.exists:
                 raise HTTPException(status_code=404, detail="Item not found")
@@ -130,5 +130,44 @@ def create_app() -> FastAPI:
         except Exception as e:
             logging.error(f"Error retrieving Shopify product {product_id}: {e}")
             raise HTTPException(status_code=500, detail="Failed to retrieve product.")
+
+    @app.post("/shopify/orders", response_model=List[Order])
+    async def list_shopify_orders(
+        credentials: ShopifyCredentials,
+        limit: Optional[int] = Query(default=100),
+    ):
+        try:
+            logging.info(f"Fetching orders from store: {credentials.store_url}")
+            
+            shopify_client = ShopifyClient(
+                api_key=credentials.api_key,
+                access_token=credentials.access_token,
+                store_url=credentials.store_url
+            )
+            
+            orders = shopify_client.get_orders(limit=limit)
+            
+            return [{
+                "id": int(order.id),
+                "order_number": str(order.order_number),
+                "total_price": float(order.total_price),
+                "created_at": order.created_at,
+                "financial_status": order.financial_status,
+                "fulfillment_status": order.fulfillment_status or None,
+                "customer_email": order.email or None,
+                "items": [{
+                    "product_id": int(item.product_id) if item.product_id else 0,
+                    "variant_id": int(item.variant_id) if item.variant_id else None,
+                    "title": str(item.title),
+                    "quantity": int(item.quantity),
+                    "price": float(item.price)
+                } for item in order.line_items]
+            } for order in orders]
+        except Exception as e:
+            logging.error(f"Error listing Shopify orders: {e}")
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed to list orders: {str(e)}"
+            )
 
     return app
