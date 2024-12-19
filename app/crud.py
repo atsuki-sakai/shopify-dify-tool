@@ -113,7 +113,7 @@ def create_app() -> FastAPI:
             logging.error(f"Error listing Shopify products: {e}")
             raise HTTPException(status_code=500, detail="Failed to list products.")
 
-    @app.get("/shopify/products/{product_id}", response_model=Product)
+    @app.post("/shopify/products/{product_id}", response_model=Product)
     def get_shopify_product(product_id: int, credentials: ShopifyCredentials):
         try:
             shopify_client = ShopifyClient(
