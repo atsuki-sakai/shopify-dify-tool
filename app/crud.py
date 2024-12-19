@@ -99,7 +99,7 @@ def create_app() -> FastAPI:
             logging.error(f"Error deleting item {item_id}: {e}")
             raise HTTPException(status_code=500, detail="Failed to delete item.")
 
-    @app.get("/shopify/products", response_model=List[Product])
+    @app.post("/shopify/products", response_model=List[Product])
     def list_shopify_products(credentials: ShopifyCredentials):
         try:
             shopify_client = ShopifyClient(
