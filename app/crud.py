@@ -14,7 +14,6 @@ collection_name = "test-collection"
 app_name = "Firestore CRUD API"
 version = "1.0.0"
 
-
 def create_app() -> FastAPI:
     app = FastAPI(title=app_name, version=version)
 

@@ -12,22 +12,7 @@ steps:
 
 - name: 'gcr.io/cloud-builders/docker'
   args:
-    [
-      'buildx',
-      'build',
-      '--platform=linux/amd64',
-      '-t',
-      'asia-northeast2-docker.pkg.dev/$PROJECT_ID/my-repo/shopify-api',
-      '.'
-    ]
-
-- name: 'gcr.io/cloud-builders/docker'
-  args:
-    ['push', 'asia-northeast2-docker.pkg.dev/$PROJECT_ID/my-repo/shopify-dify-tool']
-
-- name: 'gcr.io/cloud-builders/docker'
-  args:
-    ['push', 'asia-northeast2-docker.pkg.dev/$PROJECT_ID/my-repo/shopify-api']
+    ['push', 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/my-repo/shopify-dify-tool']
 
 - name: 'gcr.io/cloud-builders/gcloud'
   args:
@@ -36,9 +21,9 @@ steps:
       'deploy',
       'shopify-dify-tool',
       '--image',
-      'asia-northeast2-docker.pkg.dev/$PROJECT_ID/my-repo/shopify-dify-tool',
+      'asia-northeast1-docker.pkg.dev/$PROJECT_ID/my-repo/shopify-dify-tool',
       '--region',
-      'asia-northeast2',
+      'asia-northeast1',
       '--platform',
       'managed',
       '--allow-unauthenticated',
@@ -48,5 +33,4 @@ steps:
     ]
 
 images:
-- 'asia-northeast2-docker.pkg.dev/$PROJECT_ID/my-repo/shopify-dify-tool'
-- 'asia-northeast2-docker.pkg.dev/$PROJECT_ID/my-repo/shopify-api'
+- 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/my-repo/shopify-dify-tool'
