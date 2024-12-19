@@ -9,9 +9,9 @@ from app.shopify import ShopifyClient
 
 # FirestoreとRedisの初期化
 db = get_firestore_client()
-collection_name = "test-collection"
+collection_name = "shopify-dify-tool"
 
-app_name = "Firestore CRUD API"
+app_name = "Shopify Dify Tool API"
 version = "1.0.0"
 
 def create_app() -> FastAPI:

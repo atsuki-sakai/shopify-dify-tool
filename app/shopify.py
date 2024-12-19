@@ -1,9 +1,5 @@
 import shopify
 import os
-from dotenv import load_dotenv
-
-# .env ファイルをロード
-load_dotenv()
 
 class ShopifyClient:
     def __init__(self, api_key: str, password: str, store_url: str):
