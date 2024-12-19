@@ -14,8 +14,6 @@ collection_name = "test-collection"
 app_name = "Firestore CRUD API"
 version = "1.0.0"
 
-# Shopify APIの初期化
-shopify_client = ShopifyClient()
 
 def create_app() -> FastAPI:
     app = FastAPI(title=app_name, version=version)
