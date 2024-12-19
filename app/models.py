@@ -32,5 +32,5 @@ class ProductCreate(BaseModel):
 
 class ShopifyCredentials(BaseModel):
     api_key: str
-    password: str
-    store_name: str
+    access_token: str
+    store_url: str

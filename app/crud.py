@@ -104,7 +104,7 @@ def create_app() -> FastAPI:
         try:
             shopify_client = ShopifyClient(
                 api_key=credentials.api_key,
-                password=credentials.password,
+                access_token=credentials.access_token,
                 store_url=credentials.store_url
             )
             products = shopify_client.get_products()
@@ -118,7 +118,7 @@ def create_app() -> FastAPI:
         try:
             shopify_client = ShopifyClient(
                 api_key=credentials.api_key,
-                password=credentials.password,
+                access_token=credentials.access_token,
                 store_url=credentials.store_url
             )
             product = shopify_client.get_product(product_id)
