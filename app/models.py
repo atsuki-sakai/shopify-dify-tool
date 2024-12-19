@@ -29,3 +29,8 @@ class Product(BaseModel):
 class ProductCreate(BaseModel):
     name: str
     description: Optional[str] = None
+
+class ShopifyCredentials(BaseModel):
+    api_key: str
+    password: str
+    store_name: str

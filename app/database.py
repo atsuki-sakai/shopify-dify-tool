@@ -2,7 +2,6 @@ from google.cloud import firestore
 from google.oauth2 import service_account
 import os
 from dotenv import load_dotenv
-import shopify
 
 # .env ファイルをロード
 load_dotenv()
@@ -24,11 +23,3 @@ def get_firestore_client():
     
     # 本番環境（Cloud Run）ではデフォルト認証を使用
     return firestore.Client()
-
-def init_shopify():
-    SHOPIFY_API_KEY = os.getenv("SHOPIFY_API_KEY")
-    SHOPIFY_PASSWORD = os.getenv("SHOPIFY_PASSWORD")
-    SHOPIFY_STORE_NAME = os.getenv("SHOPIFY_STORE_NAME")
-
-    shopify.ShopifyResource.set_site(f"https://{SHOPIFY_API_KEY}:{SHOPIFY_PASSWORD}@{SHOPIFY_STORE_NAME}.myshopify.com/admin/api/2023-10")
-

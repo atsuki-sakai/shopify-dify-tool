@@ -17,17 +17,17 @@ steps:
       'build',
       '--platform=linux/amd64',
       '-t',
-      'asia-northeast1-docker.pkg.dev/$PROJECT_ID/my-repo/shopify-api',
+      'asia-northeast2-docker.pkg.dev/$PROJECT_ID/my-repo/shopify-api',
       '.'
     ]
 
 - name: 'gcr.io/cloud-builders/docker'
   args:
-    ['push', 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/my-repo/shopify-dify-tool']
+    ['push', 'asia-northeast2-docker.pkg.dev/$PROJECT_ID/my-repo/shopify-dify-tool']
 
 - name: 'gcr.io/cloud-builders/docker'
   args:
-    ['push', 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/my-repo/shopify-api']
+    ['push', 'asia-northeast2-docker.pkg.dev/$PROJECT_ID/my-repo/shopify-api']
 
 - name: 'gcr.io/cloud-builders/gcloud'
   args:
@@ -36,17 +36,17 @@ steps:
       'deploy',
       'shopify-dify-tool',
       '--image',
-      'asia-northeast1-docker.pkg.dev/$PROJECT_ID/my-repo/shopify-dify-tool',
+      'asia-northeast2-docker.pkg.dev/$PROJECT_ID/my-repo/shopify-dify-tool',
       '--region',
-      'asia-northeast1',
+      'asia-northeast2',
       '--platform',
       'managed',
       '--allow-unauthenticated',
       '--set-env-vars',
       'ENVIRONMENT=production',
-      '--service-account=firebase-adminsdk-cfaga@firestore-fastapi-444417.iam.gserviceaccount.com'
+      '--service-account=945826385872-compute@developer.gserviceaccount.com'
     ]
 
 images:
-- 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/my-repo/shopify-dify-tool'
-- 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/my-repo/shopify-api'
+- 'asia-northeast2-docker.pkg.dev/$PROJECT_ID/my-repo/shopify-dify-tool'
+- 'asia-northeast2-docker.pkg.dev/$PROJECT_ID/my-repo/shopify-api'

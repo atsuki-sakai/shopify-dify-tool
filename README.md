@@ -5,6 +5,7 @@
 用途:
 - Difyのカスタムツールの作成
 - firestoreをDBとしたバックエンドサーバー
+- Shopify Admin APIを利用した製品管理
 
 ---
 
@@ -37,7 +38,7 @@
 - Pythonパッケージ管理ツール `pip`
 - GCP CLIツール `gcloud`（インストールおよび認証済み）
 - ローカルにインストールされた `Docker` と `docker-compose`
-- Firebase CLI（`npm install -g firebase-tools`でインストール）
+- Firebase CLI���`npm install -g firebase-tools`でインストール）
 
 ### **3. 権限**
 サービスアカウントには以下のロールが必要です：
@@ -79,7 +80,7 @@ SHOPIFY_PASSWORD=your_shopify_password
 SHOPIFY_STORE_NAME=your_store_name
 ```
 
-### **4. アプリケーションを実行**
+### **4. アプリケーションを実��**
 FastAPIアプリケーションをローカルで起動します：
 ```bash
 uvicorn app.main:app --reload

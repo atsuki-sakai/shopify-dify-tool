@@ -1,12 +1,11 @@
 from fastapi import FastAPI, HTTPException
-from app.models import Item, ItemCreate, Product
+from app.models import Item, ItemCreate, Product, ShopifyCredentials
 from app.database import get_firestore_client
 from typing import List
 from datetime import datetime, timezone
 import json
 import logging
-from app.database import init_shopify
-import shopify
+from app.shopify import ShopifyClient
 
 # FirestoreとRedisの初期化
 db = get_firestore_client()
@@ -16,7 +15,7 @@ app_name = "Firestore CRUD API"
 version = "1.0.0"
 
 # Shopify APIの初期化
-init_shopify()
+shopify_client = ShopifyClient()
 
 def create_app() -> FastAPI:
     app = FastAPI(title=app_name, version=version)
@@ -104,18 +103,28 @@ def create_app() -> FastAPI:
             raise HTTPException(status_code=500, detail="Failed to delete item.")
 
     @app.get("/shopify/products", response_model=List[Product])
-    def list_shopify_products():
+    def list_shopify_products(credentials: ShopifyCredentials):
         try:
-            products = shopify.Product.find()
+            shopify_client = ShopifyClient(
+                api_key=credentials.api_key,
+                password=credentials.password,
+                store_url=credentials.store_url
+            )
+            products = shopify_client.get_products()
             return [{"id": p.id, "name": p.title, "description": p.body_html} for p in products]
         except Exception as e:
             logging.error(f"Error listing Shopify products: {e}")
             raise HTTPException(status_code=500, detail="Failed to list products.")
 
     @app.get("/shopify/products/{product_id}", response_model=Product)
-    def get_shopify_product(product_id: int):
+    def get_shopify_product(product_id: int, credentials: ShopifyCredentials):
         try:
-            product = shopify.Product.find(product_id)
+            shopify_client = ShopifyClient(
+                api_key=credentials.api_key,
+                password=credentials.password,
+                store_url=credentials.store_url
+            )
+            product = shopify_client.get_product(product_id)
             if not product:
                 raise HTTPException(status_code=404, detail="Product not found")
             return {"id": product.id, "name": product.title, "description": product.body_html}
