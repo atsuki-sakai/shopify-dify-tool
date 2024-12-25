@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, Query
-from app.models import Item, ItemCreate, Product, ShopifyCredentials, Order, OrderStatus
+from app.models import Item, ItemCreate, Product, ShopifyCredentials, Order, Customer
 from app.database import get_firestore_client
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone
 import json
 import logging
@@ -37,7 +37,7 @@ def create_app() -> FastAPI:
     @app.get("/items/{item_id}", response_model=Item)
     def get_item(item_id: str):
         try:
-            # Firestoreからデー���を取得
+            # Firestoreからデータを取得
             doc = db.collection(collection_name).document(item_id).get()
             if not doc.exists:
                 raise HTTPException(status_code=404, detail="Item not found")
@@ -64,7 +64,7 @@ def create_app() -> FastAPI:
     @app.put("/items/{item_id}", response_model=Item)
     def update_item(item_id: str, item: ItemCreate):
         try:
-            # Firestoreのドキュメントを更新
+            # Firestoreドキュメントを更新
             doc_ref = db.collection(collection_name).document(item_id)
             if not doc_ref.get().exists:
                 raise HTTPException(status_code=404, detail="Item not found")
@@ -100,15 +100,14 @@ def create_app() -> FastAPI:
             raise HTTPException(status_code=500, detail="Failed to delete item.")
 
     @app.post("/shopify/products", response_model=List[Product])
-    def list_shopify_products(credentials: ShopifyCredentials):
+    def list_shopify_products(credentials: ShopifyCredentials, limit: Optional[int] = Query(default=10)):
         try:
             shopify_client = ShopifyClient(
-                api_key=credentials.api_key,
                 access_token=credentials.access_token,
                 store_url=credentials.store_url
             )
-            products = shopify_client.get_products()
-            return [{"id": p.id, "name": p.title, "description": p.body_html} for p in products]
+            products = shopify_client.get_products(first=limit)
+            return products
         except Exception as e:
             logging.error(f"Error listing Shopify products: {e}")
             raise HTTPException(status_code=500, detail="Failed to list products.")
@@ -117,7 +116,6 @@ def create_app() -> FastAPI:
     def get_shopify_product(product_id: int, credentials: ShopifyCredentials):
         try:
             shopify_client = ShopifyClient(
-                api_key=credentials.api_key,
                 access_token=credentials.access_token,
                 store_url=credentials.store_url
             )
@@ -134,40 +132,54 @@ def create_app() -> FastAPI:
     @app.post("/shopify/orders", response_model=List[Order])
     async def list_shopify_orders(
         credentials: ShopifyCredentials,
-        limit: Optional[int] = Query(default=100),
+        first: Optional[int] = Query(default=100),
     ):
         try:
-            logging.info(f"Fetching orders from store: {credentials.store_url}")
-            
             shopify_client = ShopifyClient(
-                api_key=credentials.api_key,
                 access_token=credentials.access_token,
                 store_url=credentials.store_url
             )
             
-            orders = shopify_client.get_orders(limit=limit)
+            orders = shopify_client.get_orders(first=first)
             
-            return [{
-                "id": int(order.id),
-                "order_number": str(order.order_number),
-                "total_price": float(order.total_price),
-                "created_at": order.created_at,
-                "financial_status": order.financial_status,
-                "fulfillment_status": order.fulfillment_status or None,
-                "customer_email": order.email or None,
-                "items": [{
-                    "product_id": int(item.product_id) if item.product_id else 0,
-                    "variant_id": int(item.variant_id) if item.variant_id else None,
-                    "title": str(item.title),
-                    "quantity": int(item.quantity),
-                    "price": float(item.price)
-                } for item in order.line_items]
-            } for order in orders]
+            # GraphQL APIからの応答をパース
+            return orders  # ShopifyClientクラスで既に正しい形式に変換されています
         except Exception as e:
             logging.error(f"Error listing Shopify orders: {e}")
             raise HTTPException(
                 status_code=500,
                 detail=f"Failed to list orders: {str(e)}"
+            )
+
+    @app.post("/shopify/customers/{customer_id}/orders", response_model=Customer)
+    async def get_customer_orders(
+        customer_id: str,
+        credentials: ShopifyCredentials,
+        first: Optional[int] = Query(default=10)
+    ):
+        try:
+            shopify_client = ShopifyClient(
+                access_token=credentials.access_token,
+                store_url=credentials.store_url
+            )
+            
+            orders = shopify_client.get_customer_orders(
+                customer_id=customer_id,
+                first=first
+            )
+            
+            if not orders:
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"No orders found for customer {customer_id}"
+                )
+            
+            return orders
+        except Exception as e:
+            logging.error(f"Error retrieving customer orders: {e}")
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed to retrieve customer orders: {str(e)}"
             )
 
     return app

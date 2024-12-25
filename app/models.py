@@ -1,63 +1,71 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import List, Optional, Dict, Any
 from datetime import datetime
-from typing import List
-from enum import Enum
+
 class ItemBase(BaseModel):
     name: str
-    description: str
-    class Config:
-        schema_extra = {
-            "example": {
-                "name": "Sample Item",
-                "description": "A sample item description"
-            }
-        }
+    description: Optional[str] = None
 
 class ItemCreate(ItemBase):
     pass
 
 class Item(ItemBase):
     id: str
-    created_at: datetime
-    updated_at: Optional[datetime] = None
+    created_at: Optional[str] = None
+    updated_at: Optional[str] = None
+
+class ShopifyCredentials(BaseModel):
+    access_token: str
+    store_url: str
 
 class Product(BaseModel):
     id: int
     name: str
     description: Optional[str] = None
-
-class ProductCreate(BaseModel):
-    name: str
-    description: Optional[str] = None
-
-class ShopifyCredentials(BaseModel):
-    api_key: str
-    access_token: str
-    store_url: str
+    handle: Optional[str] = None
+    created_at: Optional[str] = None
+    updated_at: Optional[str] = None
+    price: Optional[str] = None
+    image_url: Optional[str] = None
 
 class OrderItem(BaseModel):
-    product_id: Optional[int] = 0
-    variant_id: Optional[int]
+    product_id: Optional[int] = None
+    variant_id: Optional[int] = None
     title: str
     quantity: int
     price: float
 
 class Order(BaseModel):
     id: int
-    order_number: str | int
+    order_number: str
     total_price: float
-    created_at: datetime
-    financial_status: str
-    fulfillment_status: Optional[str]
-    customer_email: Optional[str]
+    created_at: str
+    customer_email: Optional[str] = None
     items: List[OrderItem]
 
-class OrderStatus(str,Enum):
-    ANY = "any"
-    OPEN = "open"
-    PENDING = "pending"
-    INVOICED = "invoiced"
-    PAID = "paid"
-    PARTIALLY_PAID = "partially_paid"
-    UNPAID = "unpaid"
+class Address(BaseModel):
+    address1: Optional[str] = None
+    address2: Optional[str] = None
+    city: Optional[str] = None
+    country: Optional[str] = None
+    province: Optional[str] = None
+    zip: Optional[str] = None
+
+class LastOrder(BaseModel):
+    items: List[OrderItem]
+
+class Money(BaseModel):
+    amount: float
+    currency_code: str
+
+
+class Customer(BaseModel):
+    created_at: str
+    display_name: str
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    tags: List[str]
+    product_subscriber_status: Optional[str] = None
+    last_order: Optional[LastOrder] = None
+    default_address: Optional[Address] = None
+    orders: List[Order]
