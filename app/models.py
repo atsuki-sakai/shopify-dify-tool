@@ -40,7 +40,6 @@ class Order(BaseModel):
     order_number: str
     total_price: float
     created_at: str
-    customer_email: Optional[str] = None
     items: List[OrderItem]
 
 class Address(BaseModel):

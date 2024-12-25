@@ -168,12 +168,6 @@ def create_app() -> FastAPI:
                 first=first
             )
             
-            if not orders:
-                raise HTTPException(
-                    status_code=404,
-                    detail=f"No orders found for customer {customer_id}"
-                )
-            
             return orders
         except Exception as e:
             logging.error(f"Error retrieving customer orders: {e}")

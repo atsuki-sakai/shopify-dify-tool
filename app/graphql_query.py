@@ -66,16 +66,12 @@ query GetOrders($first: Int!) {
         edges {
             node {
                 id
-                name
                 totalPriceSet {
                   shopMoney {
                     amount
                   }
                 }
                 createdAt
-                displayFinancialStatus
-                displayFulfillmentStatus
-                email
                 lineItems(first: 10) {
                   edges {
                     node {
@@ -135,9 +131,7 @@ query GetCustomerOrders($customerId: ID!, $first: Int!) {
       edges {
         node {
           id
-          name
           createdAt
-          email
           totalPriceSet {
             shopMoney {
               amount

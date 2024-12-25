@@ -79,7 +79,6 @@ class ShopifyClient:
                     "order_number": node['name'],
                     "total_price": float(node['totalPriceSet']['shopMoney']['amount']),
                     "created_at": node['createdAt'],
-                    "customer_email": node['email'],
                     "items": [
                         {
                             "product_id": int(item['node']['product']['id'].split('/')[-1]) if item['node']['product'] else None,
@@ -138,7 +137,6 @@ class ShopifyClient:
                         "order_number": node['name'],
                         "total_price": float(node['totalPriceSet']['shopMoney']['amount']),
                         "created_at": node['createdAt'],
-                        "customer_email": node['email'],
                         "items": [
                             {
                                 "product_id": int(item['node']['product']['id'].split('/')[-1]) if item['node']['product'] else None,
