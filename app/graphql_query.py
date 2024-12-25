@@ -66,6 +66,7 @@ query GetOrders($first: Int!) {
         edges {
             node {
                 id
+                name
                 totalPriceSet {
                   shopMoney {
                     amount
@@ -132,6 +133,7 @@ query GetCustomerOrders($customerId: ID!, $first: Int!) {
         node {
           id
           createdAt
+          name
           totalPriceSet {
             shopMoney {
               amount
